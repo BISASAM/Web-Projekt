@@ -1,2 +1,2 @@
 # Web-Projekt
-DHBW Web Engineering Project
+DHBW Web Engineering Projekt
