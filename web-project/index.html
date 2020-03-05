@@ -8,11 +8,17 @@
   </head>
   <body>
     <h1>Webanwendung mit API-Suche</h1>
-    <label>
+    <div id="search">
       Suchanfrage:
       <input id="searchText" type="search" />
-    </label>
-    <button id="searchButton">Los!</button>
+      <form style="display: inline-block">
+        <select id="displayType">
+          <option value="image">Bild</option>
+          <option value="table">Tabelle</option>
+        </select>
+      </form>
+      <button id="searchButton">Los!</button>
+    </div>
     <div id="results">
       <!-- hier werden die Suchergebnisse angezeigt -->
     </div>
