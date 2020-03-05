@@ -1,1 +1,4 @@
-/* hier werden eigene CSS-Regeln deklariert */
+img {
+    width: 300px;
+    height: 300px;
+}
