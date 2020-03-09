@@ -1,3 +1,11 @@
+h1 {
+        color: rgb(252, 156, 156);
+}
+
+table, th, td {
+    border: 1px solid black;
+}
+
 img {
     width: 300px;
     height: 300px;
