@@ -1,9 +1,10 @@
 const container = document.getElementById('results');
 const searchText = document.getElementById('searchText');
 const btn = document.getElementById('searchButton');
-const dType = document.getElementById('displayType');
+const selectedFilter = document.getElementById('filter');
 
-// "Los" Button get clicked.
+
+// "Los" Button gets clicked.
 btn.addEventListener('click', apiSearch);
 
 // input field submited with enter.
@@ -16,49 +17,87 @@ input.addEventListener("keyup", function(event) {
     }
 });
 
+function createDivElement(source) {
+    let seriesDiv = 
+    `<div id="series">
+        <img src="${source.image.medium}"></img>
+        <p id="name">${source.name}</p>
+        <p>
+            <button class="info">Info</button>
+            <button class="favs">Speichern</button>
+        </p>
+        <div class="hidden" id="infoText">
+            ${source.summary}
+        </div>
+    </div>`;
+    return seriesDiv;
+}
+
 // Declare function.
 async function apiSearch() {
     const searchQuery = searchText.value;
     // Save JSON-Result. 
     const response = await fetch(`http://api.tvmaze.com/search/shows?q=${searchQuery}`);
-    console.log(response);
+    // 200 means "ok".
+    if (response.status !== 200) {
+        console.log('Problem with api: ' + response.status);
+    }
     const json = await response.json();
 
     console.log(json);
 
-    // get the selection from the dropdown menu.
-    getDisplayType(json, dType.options[dType.selectedIndex].value);
-}
+    /* Das hier ist eine Vorlage zum Filtern - bisher einfach nur abgeschrieben.
+    // selectedStatus muss noch als Variable definiert werden.
+    if (seletedStatus.length > 0) {
+        json = json.filter(item => item.show.status === selectedStatus)
+    }
+    */
 
-function getDisplayType(jsonElement, dt) {
-    if (dt == "image") {
-        insertImageIntoHTML(jsonElement); 
-    }
-    else if (dt == "table") {
-        insertTableInformation(jsonElement);
-    }
+    insertIntoHTML(json);
 }
 
 // Insert images into HTML.
-function insertImageIntoHTML(jsonArray) {
+function insertIntoHTML(jsonArray) {
     let htmlString = '';
     // inserts the images into HTML.
     for (const jsonItem of jsonArray) {
-        htmlString += `<img src="${jsonItem.show.image.medium}"</img>`;
+        if (jsonItem.show.image) {
+            htmlString += createDivElement(jsonItem.show);
+        } 
     }
     container.innerHTML = htmlString;
+
+    const infoButtons = document.getElementsByClassName("info");
+    for (const element of infoButtons) {
+        element.addEventListener('click', function() {showInfo(element)});
+    }
 }
 
-// Inserts api information into a table.
-function insertTableInformation(jsonArray) {
-    let htmlString = '<table><tr><th>Name</th><th>Genre</th><th>Premiere</th><th>Sprache</th><th>Produktionsland</th></tr>';
-    for (const jsonItem of jsonArray) {
-        htmlString += `<tr><td>${jsonItem.show.name}</td>`;
-        htmlString += `<td>${jsonItem.show.genres}</td>`;
-        htmlString += `<td>${jsonItem.show.premiered}</td>`;
-        htmlString += `<td>${jsonItem.show.language}</td>`;
-        htmlString += `<td>${jsonItem.show.network.country.name}</td>`;
-    }
-    htmlString += '</table>';
-    container.innerHTML = htmlString;
+function showInfo(btnElement) {
+    let parent = btnElement.parentNode.nextSibling.nextSibling.classList.toggle("hidden");
+    console.log(parent);
 }
+
+/*
+
+
+
+
+
+
+// Code von der Vorlesung
+function addEventListenersToWatchLaterButton (node, id) {
+    const elements = node.getElementByClassName('favs');
+    for (const element of elements) {
+        element.addEventListener('click', () => {
+            let ids = JSON.parse(localStorage.getItem('favs'));
+            // localStorage is empty.
+            if (ids === null) {
+                ids = [];
+            }
+            ids.push(id);
+            localStorage.setItem('favs', JSON.stringify(ids)); // TODO
+        });
+    }    
+}
+*/
