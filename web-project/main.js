@@ -4,10 +4,9 @@ const btn = document.getElementById('searchButton');
 const selectedFilter = document.getElementById('filter');
 
 
-// "Los" Button gets clicked.
+// ----- Submit input with enter or by clicking Los -----
 btn.addEventListener('click', apiSearch);
 
-// input field submited with enter.
 let input = document.getElementById("searchText");
 input.addEventListener("keyup", function(event) {
     // Enter is key number 13.
@@ -17,6 +16,8 @@ input.addEventListener("keyup", function(event) {
     }
 });
 
+
+// ----- Standard Layout for each series -----
 function createDivElement(source) {
     let seriesDiv = 
     `<div id="series">
@@ -24,7 +25,7 @@ function createDivElement(source) {
         <p id="name">${source.name}</p>
         <p>
             <button class="info">Info</button>
-            <button class="favs">Speichern</button>
+            <button class="favs" onclick="saveSeries(${source.id})">Speichern</button>
         </p>
         <div class="hidden" id="infoText">
             ${source.summary}
@@ -33,7 +34,8 @@ function createDivElement(source) {
     return seriesDiv;
 }
 
-// Declare function.
+
+// ----- Performing an API-Request -----
 async function apiSearch() {
     const searchQuery = searchText.value;
     // Save JSON-Result. 
@@ -46,24 +48,37 @@ async function apiSearch() {
 
     console.log(json);
 
-    /* Das hier ist eine Vorlage zum Filtern - bisher einfach nur abgeschrieben.
-    // selectedStatus muss noch als Variable definiert werden.
-    if (seletedStatus.length > 0) {
-        json = json.filter(item => item.show.status === selectedStatus)
+    // TODO: Wenn das Array etwas enthält aber durch den Filter nichts angezeigt wird
+    // wird noch nicht KEIN ERGEBNIS angezeigt.
+    if (json.length > 0) {
+        insertIntoHTML(json);
+    } else {
+        container.innerHTML = "<p>Kein Ergebnis gefunden</p>"
     }
-    */
-
-    insertIntoHTML(json);
 }
 
-// Insert images into HTML.
+
+// ----- Converting information into HTML -----
 function insertIntoHTML(jsonArray) {
     let htmlString = '';
+    let selection = getFilterMethod();
     // inserts the images into HTML.
-    for (const jsonItem of jsonArray) {
-        if (jsonItem.show.image) {
-            htmlString += createDivElement(jsonItem.show);
-        } 
+    if (selection === "Alle") {
+        for (const jsonItem of jsonArray) {
+            if (jsonItem.show.image) {
+                htmlString += createDivElement(jsonItem.show);
+            } 
+        }
+    } else {
+        for (const jsonItem of jsonArray) {
+            if (jsonItem.show.image) {
+                if(!filter(jsonItem, selection)) { 
+                    console.log(jsonItem.show.name + " is " + jsonItem.show.status + " --- " + !filter(jsonItem));
+                    continue;
+                }
+                htmlString += createDivElement(jsonItem.show);
+            } 
+        }
     }
     container.innerHTML = htmlString;
 
@@ -73,31 +88,32 @@ function insertIntoHTML(jsonArray) {
     }
 }
 
+
+// ----- Buttons -----
 function showInfo(btnElement) {
     let parent = btnElement.parentNode.nextSibling.nextSibling.classList.toggle("hidden");
     console.log(parent);
 }
 
-/*
-
-
-
-
-
-
-// Code von der Vorlesung
-function addEventListenersToWatchLaterButton (node, id) {
-    const elements = node.getElementByClassName('favs');
-    for (const element of elements) {
-        element.addEventListener('click', () => {
-            let ids = JSON.parse(localStorage.getItem('favs'));
-            // localStorage is empty.
-            if (ids === null) {
-                ids = [];
-            }
-            ids.push(id);
-            localStorage.setItem('favs', JSON.stringify(ids)); // TODO
-        });
-    }    
+function saveSeries(id) {
+    let ids = JSON.parse(localStorage.getItem('savedIDs'));
+    if (ids === null) {
+        ids = [];
+    }
+    ids.push(id);
+    localStorage.setItem('savedIDs', JSON.stringify(ids));
 }
-*/
+
+
+// ----- Filtering the Output -----
+function getFilterMethod() {
+    return document.getElementById("filter").value;
+}
+
+function filter(jsonElement, filterMethod) {
+    if (jsonElement.show.status === filterMethod) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
