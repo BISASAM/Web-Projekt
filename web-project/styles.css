@@ -1,9 +1,14 @@
 body {
-    background-color: rgb(185, 182, 177);
+    background-color: whitesmoke;
 }
 
 h1 {
-    color: whitesmoke;
+    color: #0099FF;
+}
+
+table, th, td{
+    border: 1px solid black;
+    text-align: center;
 }
 
 #results {
@@ -14,9 +19,8 @@ h1 {
 #series {
     margin: 10px;
     max-width: 250px;
-    background-color: rgba(189, 45, 45, 0.226);
-    border-radius: 1%;
-    border-style: groove;
+    background-color: #E0E0E0;
+    border-radius: 3%;
 }
 
 .hidden {
@@ -24,13 +28,13 @@ h1 {
 }
 
 #infoText {
-    margin-left: 5px;
-    margin-right: 5px;
+    margin-left: 7px;
+    margin-right: 7px;
 }
 
 .info, .favs {
     width: 210px;
-    background-color: rgb(255, 215, 196);
+    background-color: whitesmoke;
 }
 
 #series img, #name, #series button{
