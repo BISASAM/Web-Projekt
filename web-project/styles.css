@@ -21,7 +21,7 @@ th, td {
 }
 
 tbody tr:hover {
-    background: rgba(0, 153, 255, 0.5);
+    background: whitesmoke;
 }
 
 #results {
@@ -47,7 +47,6 @@ tbody tr:hover {
 
 .info, .favs {
     width: 100px;
-    display: inline-grid;
     padding: 0.25rem;
 }
 
@@ -71,4 +70,24 @@ tbody tr:hover {
 
 #name {
     font-weight: bolder;
+    color: rgba(0, 0, 0, 0.623);
+}
+
+#netflixIcon, #amazonIcon {
+    width: 40px;
+    height: 40px;
+}
+
+table #netflixIcon, table #amazonIcon {
+    width: 30px;
+    height: 30px;
+    padding: 10px;
+}
+
+p #netflixIcon {
+    margin-left: 50px;
+}
+
+p #amazonIcon {
+    margin-left: 40px;
 }
