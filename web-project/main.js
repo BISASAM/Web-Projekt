@@ -24,6 +24,8 @@ input.addEventListener("keyup", function(event) {
 
 // ----- Standard Layout for each series -----
 function createDivElementForImage(source) {
+    let btnText = seriesIsAlreadySaved(source.id);
+    console.log(source);
     let seriesDiv = 
     `
     <div id="series">
@@ -31,7 +33,7 @@ function createDivElementForImage(source) {
         <p id="name">${source.name}</p>
         <p>
             <button class="info">Info</button>
-            <button class="favs" id="bookmarkButton" onclick="saveSeriesID('${source.id}', '${source.name}')">Merken</button>
+            <button class="favs" id="bookmarkButton" name="${source.id}+/${source.name}">${btnText}</button>
         </p>
         <div class="hidden" id="infoText">
             ${source.summary}
@@ -100,57 +102,117 @@ function insertIntoHTML(jsonArray) {
     container.innerHTML = htmlString;
 
     const infoButtons = document.getElementsByClassName("info");
-    for (const element of infoButtons) {
-        element.addEventListener('click', function() {showInfo(element)});
+    for (const button of infoButtons) {
+        button.addEventListener('click', function() {showInfo(button)});
+    }
+
+    const saveButtons = document.getElementsByClassName("favs");
+    for (const button of saveButtons) {
+        button.addEventListener('click', function() {saveOrDelete(button)});
     }
 }
 
 
-// ----- Buttons -----
+// ----- Info Button -----
 function showInfo(btnElement) {
     let parent = btnElement.parentNode.nextSibling.nextSibling.classList.toggle("hidden");
     console.log(parent);
 }
 
-function saveSeriesID(id, name) {
-    let ids = JSON.parse(localStorage.getItem('savedIDs'));
-    let idAndName = id + ' ' + name;
-    if (ids === null) {
-        ids = [];
+
+// ----- Is the series already on the bookmark list? -----
+function saveOrDelete(btn) {
+    console.log(btn);
+    btnInfo = btn.name.split('+/');
+
+    if (btn.innerHTML === "Merken") {
+        saveSeries(btnInfo[0], btnInfo[1]);
+        btn.innerHTML = "Vergessen";
+    } else {
+        btn.innerHTML = "Merken";
+        deleteSeries(btnInfo[0]);
     }
-    ids.push(idAndName);
-    localStorage.setItem('savedIDs', JSON.stringify(ids));
+}
+
+
+// ----- Saves series to local storage -----
+function saveSeries(id, name) {
+    console.log(id);
+    console.log(1);
+    let series = JSON.parse(localStorage.getItem('savedSeries'));
+    let idAndName = id + '+/' + name;
+    if (series === null) {
+        series = [];
+    }
+    series.push(idAndName);
+    localStorage.setItem('savedSeries', JSON.stringify(series));
 
     // TODO: Hier entweder mit einem Class toggle zwischen Merken und vergessen
     // switchen oder irgendwie nur das innerHTML verändern... 
     // Auf jeden Fall etwas womit man später auch Elemente von der Merkliste
     // löschen kann.
-    console.log(document.getElementById('bookmarkButton').className);
 }
 
 
-// ----- Filtering the Output -----
+// ----- Delete series from local storage -----
+function deleteSeries(id) {
+    let series = JSON.parse(localStorage.getItem('savedSeries'));
+    console.log(series);
+    newArray = [];
+    for (let i=0; i<series.length; i++) {
+        x = series[i].split('+/');
+        if (x[0] === id) {
+            series.splice(i, 1);
+            break;
+        }
+        console.log(series[i]);
+    }
+    seriesID = series[0].split('+/');
+    console.log(seriesID);
+    localStorage.setItem('savedSeries', JSON.stringify(series));
+}
+
+
+// ----- Show the correct buttons when reloading the page -----
+function seriesIsAlreadySaved(id) {
+    let bookmarksArray = JSON.parse(localStorage.getItem('savedSeries'));
+    if (!bookmarksArray) {
+        return "Merken";
+    }
+    for (series of bookmarksArray) {
+        series = series.split("+/");
+        if (parseInt(series[0]) === id) {
+            return "Vergessen";
+        }
+    }
+    return "Merken";
+}
+
+
+// ----- Show saved Series -----
+function showSavedSeries() {
+    let htmlString = '<table id="bookmarks"><thead><th>NAME</th><th>ID</th></thead><tbody>';
+    let bookmarksArray = JSON.parse(localStorage.getItem('savedSeries'));
+    for (series of bookmarksArray) {
+        series = series.split("+/");
+        console.log("0: " + series[0] + ", 1: " + series[1]);
+        htmlString += createDivElementForBookmarks(series[0], series[1]);
+    }
+    container.innerHTML = htmlString + '</tbody></table>';
+}
+
+
+// ----- Which filter is selected? -----
 function getFilterMethod() {
     return document.getElementById("filter").value;
 }
 
+
+// ----- Does the jsonElement match the selected filter method? -----
 function filter(jsonElement, filterMethod) {
     if (jsonElement.show.status === filterMethod) {
         return 1;
     } else {
         return 0;
     }
-}
-
-
-// ----- Show saved Series -----
-function showSavedSeries() {
-    let htmlString = '<table id="bookmarks"><th>NAME</th><th>ID</th>';
-    let bookmarksArray = JSON.parse(localStorage.getItem('savedIDs'));
-    for (series of bookmarksArray) {
-        series = series.split(" ");
-        console.log("0: " + series[0] + ", 1: " + series[1]);
-        htmlString += createDivElementForBookmarks(series[0], series[1]);
-    }
-    container.innerHTML = htmlString + '</table>';
 }
