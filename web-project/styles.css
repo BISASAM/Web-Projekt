@@ -8,6 +8,11 @@ h1 {
     color: #0099FF;
 }
 
+#filterBox {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
 table {
     border-collapse: collapse;
     margin-top: 20px;

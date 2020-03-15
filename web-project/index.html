@@ -11,15 +11,17 @@
     <div id="search">
       Suchanfrage:
       <input id="searchText" type="search" />
-      <form style="display: inline-block">
-        <select id="filter">
-          <option id="all">Alle</option>
-          <option id="running">Running</option>
-          <option id="ended">Ended</option>
-        </select>
-      </form>
       <button id="searchButton">Los!</button>
       <button id="showBookmarks">Merkliste</button>
+    </div>
+    <div id="filterBox">
+      Filter: 
+      Status:
+      <select id="filter">
+        <option id="all">Alle</option>
+        <option id="running">Running</option>
+        <option id="ended">Ended</option>
+      </select>
     </div>
     <div id="results" class="dropdown">
       <!-- hier werden die Suchergebnisse angezeigt -->
