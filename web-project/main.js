@@ -4,6 +4,9 @@ const losBtn = document.getElementById('searchButton');
 const selectedFilter = document.getElementById('filter');
 const bookmarksBtn = document.getElementById('showBookmarks');
 
+// globaly available api results (allows filtering without performing a re-request)
+let apiResult;
+
 
 // Set up Event Listener
 // ---Catch a click on 'Los' Button
@@ -21,6 +24,9 @@ textInput.addEventListener("keyup", function(event) {
 // ---Catch a click on 'Merkliste' Button
 bookmarksBtn.addEventListener('click', showSavedSeries);
 
+// ---Catch a change in filter setting
+selectedFilter.addEventListener("change", insertIntoHTML);
+
 
 
 // Performe API-Request
@@ -32,31 +38,38 @@ async function apiSearch() {
     if (response.status !== 200) {
         console.log('Problem with api: ' + response.status);
     }
-    const json = await response.json();
 
-    console.log(json);
+    apiResult = await response.json();  // global var
 
-    // TODO: Wenn das Array etwas enthält aber durch den Filter nichts angezeigt wird
-    // wird noch nicht KEIN ERGEBNIS angezeigt.
-    if (json.length > 0) {
-        insertIntoHTML(json);
-    } else {
-        container.innerHTML = "<p>Kein Ergebnis gefunden</p>"
-    }
+    console.log(apiResult);
+
+    insertIntoHTML();
+    
 }
 
 
 
 // Insert api request results into HTML
 // ---process api request results
-function insertIntoHTML(jsonArray) {
+function insertIntoHTML() {
     // clear results div
     resultsContainer.innerHTML = '';
 
+    //filter entries
+    const filteredResult = apiResult.filter(checkSeriesStatus);
+
+    console.log(filteredResult);
+
+
+    if (!filteredResult.length > 0) {
+        resultsContainer.innerHTML = "<p>Kein Ergebnis gefunden</p>"
+        return;
+    }
+
     // insert div elements per movie
-    for (const jsonItem of jsonArray) {
-        if (jsonItem.show.image && checkSeriesStatus(jsonItem.show.status)) {
-            createDivElementForMovie(jsonItem.show);
+    for (const series of filteredResult) {
+        if (series.show.image) {
+            createDivElementForMovie(series.show);
         } 
     }
     
@@ -202,13 +215,12 @@ function showSavedSeries() {
 // Helper methods
 
 // ---Does the jsonElement match the selected filter method?
-function checkSeriesStatus(status) {
-    const filterStatus = document.getElementById("filter").value;
-    if (filterStatus === 'Alle') {
+function checkSeriesStatus(seriesJson) {
+    if (selectedFilter.value === 'Alle') {
         return true;
     }
     else {
-        return status === filterStatus;
+        return seriesJson.show.status === selectedFilter.value;
     }
 }
 
