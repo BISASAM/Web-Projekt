@@ -24,8 +24,8 @@ textInput.addEventListener("keyup", function(event) {
 // ---Catch a click on 'Merkliste' Button
 bookmarksBtn.addEventListener('click', showSavedSeries);
 
-// ---Catch a change in filter setting
-selectedFilter.addEventListener("change", insertIntoHTML);
+// ---Catch a change in filter settings
+selectedFilter.addEventListener("change", onChangeFilter);
 
 
 
@@ -49,9 +49,6 @@ async function apiSearch() {
 
 // Insert api request results into HTML
 function insertIntoHTML() {
-    if (apiResult == undefined) { // there hasn't been made an api request yet
-        return;
-    }
 
     // clear results div
     resultsContainer.innerHTML = '';
@@ -133,6 +130,15 @@ function saveOrDelete(btn) {
         btn.innerHTML = "Merken";
         deleteSeries(btnInfo[0]);
     }
+}
+
+// ---Change Filter
+function onChangeFilter() {
+    if (apiResult == undefined) { // there hasn't been made an api request yet
+        return;
+    }
+
+    insertIntoHTML();
 }
 
 
