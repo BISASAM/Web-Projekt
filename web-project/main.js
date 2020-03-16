@@ -49,6 +49,10 @@ async function apiSearch() {
 
 // Insert api request results into HTML
 function insertIntoHTML() {
+    if (apiResult == undefined) { // there hasn't been made an api request yet
+        return;
+    }
+
     // clear results div
     resultsContainer.innerHTML = '';
 
