@@ -61,6 +61,9 @@ async function apiSearchWithID(sourceId) {
 
 // Insert api request results into HTML
 function insertIntoHTML() {
+    // this funtion takes whatever is in the global apiResult variable, filters it, and displays it
+
+
     // clear results div
     resultsContainer.innerHTML = '';
 
@@ -197,29 +200,21 @@ function deleteSeries(id) {
 // ---Show saved Series
 async function showBookmarks() {
 
+    //reset filter to show all bookmarks
+    selectedFilter.selectedIndex = 0;
+
     let bookmarks = getBookmarks();
     
-    let apiResults = [];
+    apiResult = [];  // global var
     for (const seriesId of bookmarks) {
         const result = await apiSearchWithID(seriesId);
-        apiResults.push(result);
+        apiResult.push({"show": result});  // keep original array structure
     }
 
-    console.log(apiResults);
+    console.log(apiResult);
 
-    insertBookmarksIntoHTML(apiResults);
+    insertIntoHTML();
 }
-
-function insertBookmarksIntoHTML(seriesList) {
-    // clear results div
-    resultsContainer.innerHTML = '';
-
-    let bookmarks = getBookmarks();
-    for (entry of seriesList) {
-        createDivElementForSeries(entry, bookmarks);
-    }
-}
-
 
 
 // Helper methods
