@@ -10,26 +10,21 @@ let apiResult;
 
 // Set up Event Listener
 // ---Catch a click on 'Los' Button
-losBtn.addEventListener('click', apiSearch);
-
+losBtn.addEventListener('click', onLosBtn);
 // ---Catch key event in text input field
 textInput.addEventListener("keyup", function(event) {
     // Enter is key number 13.
     if (event.keyCode === 13) {
     event.preventDefault();
-    apiSearch();
+    onLosBtn();
     }
 });
-
 // ---Catch a click on 'Merkliste' Button
 bookmarksBtn.addEventListener('click', showBookmarks);
-
 // ---Catch a change in filter settings
 selectedFilter.addEventListener("change", onChangeFilter);
 
 
-
-// Performe API-Request
 async function apiSearch() {
     const searchQuery = textInput.value;
     // Save JSON-Result. 
@@ -39,11 +34,11 @@ async function apiSearch() {
         console.log('Problem with api: ' + response.status);
     }
 
-    apiResult = await response.json();  // global var
+    const result = await response.json();
 
-    console.log(apiResult);
+    console.log(result);
 
-    insertIntoHTML();
+    return result;
 }
 
 async function apiSearchWithID(sourceId) {
@@ -59,7 +54,6 @@ async function apiSearchWithID(sourceId) {
     return result;
 }
 
-// Insert api request results into HTML
 function insertIntoHTML() {
     // this funtion takes whatever is in the global apiResult variable, filters it, and displays it
 
@@ -85,37 +79,38 @@ function insertIntoHTML() {
     
 }
 
-// create div element for each movie and append to parent div
-function createDivElementForSeries(source, bookmarks) {
-    let bkmBtnText = bookmarks.has(source.id) ? "Vergessen" : "Merken";
+function createDivElementForSeries(series, bookmarks) {
+    // creates div element for one series and appends it to parent div
+    // also, checks if series is bookmarked already
+    let bkmBtnText = bookmarks.has(series.id) ? "Vergessen" : "Merken";
 
     let seriesDiv = document.createElement('div');
     seriesDiv.className = 'series';
     seriesDiv.innerHTML = 
     `
-    <img src="${source.image.medium}"></img>
-    <p class"seriesName">${source.name}</p>
+    <img src="${series.image.medium}"></img>
+    <p class="seriesName">${series.name}</p>
     <p>
         <button class="info">Info</button>
         <button class="favs">${bkmBtnText}</button>
-        <a href="https://www.netflix.com/search?q=${source.name}" target="_blank">
+        <a href="https://www.netflix.com/search?q=${series.name}" target="_blank">
             <img id="netflixIcon" src="/icons/1200px-Netflix_icon.svg.png"></img>
         </a>
-        <a href="https://www.amazon.de/s?k=${source.name}&i=instant-video&__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&ref=nb_sb_noss_2" target="_blank">
+        <a href="https://www.amazon.de/s?k=${series.name}&i=instant-video&__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&ref=nb_sb_noss_2" target="_blank">
             <img id="amazonIcon" src="/icons/amazon-prime.png"></img>
         </a>
     </p>
-    <div class="hidden infobox" id="${source.id}">
-        ${source.summary}
+    <div class="hidden infobox" id="${series.id}">
+        ${series.summary}
     </div>
     `;
 
-    // set event listener to info- and bookmark button
+    // set event listener to created info- and bookmark button
     const infoButton = seriesDiv.getElementsByClassName("info")[0];
-    infoButton.addEventListener('click', function() {showInfo(source.id)});
+    infoButton.addEventListener('click', function() {OnInfoBtn(series.id)});
     
     const bookmarkButton = seriesDiv.getElementsByClassName("favs")[0]
-    bookmarkButton.addEventListener('click', function(event) {onBookmarkBtn(event, source.id)});
+    bookmarkButton.addEventListener('click', function(event) {onBookmarkBtn(event, series.id)});
     
     resultsContainer.appendChild(seriesDiv);
 
@@ -124,8 +119,47 @@ function createDivElementForSeries(source, bookmarks) {
 
 
 // Button methods
+
+// ---Los Button
+async function onLosBtn() {
+
+    // remove bookmark heading if currently displayed
+    const elem = document.getElementById("bkmHeading");
+    if (elem != null) {
+        elem.parentNode.removeChild(elem);
+    }
+
+    apiResult = await apiSearch();  // global var
+    insertIntoHTML();
+}
+
+// ---Merkliste Button
+async function showBookmarks() {
+
+    //reset filter to show all bookmarks
+    selectedFilter.selectedIndex = 0;
+
+    // create little heading for bookmark page
+    if (document.getElementById("bkmHeading") == null) {
+        let bookmarkHeading = document.createElement('p');
+        bookmarkHeading.id = "bkmHeading";
+        bookmarkHeading.innerHTML = "Merkliste";
+        resultsContainer.parentNode.insertBefore(bookmarkHeading, resultsContainer);
+    }
+
+    let bookmarks = getBookmarks();  
+    apiResult = [];  // global var
+    for (const seriesId of bookmarks) {
+        const result = await apiSearchWithID(seriesId);
+        apiResult.push({"show": result});  // keep original array structure
+    }
+
+    console.log(apiResult);
+    insertIntoHTML();
+}
+
 // ---Info Button
-function showInfo(seriesId) {
+function OnInfoBtn(seriesId) {
     document.getElementById(seriesId).classList.toggle("hidden");
 }
 
@@ -148,13 +182,12 @@ function onChangeFilter() {
         return;
     }
 
-    insertIntoHTML(apiResult);
+    insertIntoHTML();
 }
 
 
 
 // Bookmark methods
-// ---Get bookmarked series
 function getBookmarks() {
     let bookmarks = JSON.parse(localStorage.getItem('savedSeries'));
     
@@ -194,26 +227,6 @@ function deleteSeries(id) {
     localStorage.setItem('savedSeries', JSON.stringify([...bookmarks]));
 
     console.log (bookmarks);
-}
-
-
-// ---Show saved Series
-async function showBookmarks() {
-
-    //reset filter to show all bookmarks
-    selectedFilter.selectedIndex = 0;
-
-    let bookmarks = getBookmarks();
-    
-    apiResult = [];  // global var
-    for (const seriesId of bookmarks) {
-        const result = await apiSearchWithID(seriesId);
-        apiResult.push({"show": result});  // keep original array structure
-    }
-
-    console.log(apiResult);
-
-    insertIntoHTML();
 }
 
 

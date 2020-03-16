@@ -38,7 +38,7 @@ tbody tr:hover {
     margin: 5px;
     max-width: 250px;
     background-color: #E0E0E0;
-    border-radius: 3%;
+    border-radius: 5%;
 }
 
 .hidden {
@@ -63,17 +63,16 @@ tbody tr:hover {
     margin-right: 20px;
 }
 
-#series img, #name {
+.series img {
     margin-left: 20px;
     margin-right: 20px;
-}
-
-#series img {
     margin-top: 20px;
-    border-radius: 15%;
+    border-radius: 7%;
 }
 
 .seriesName {
+    margin-left: 20px;
+    margin-right: 20px;
     font-weight: bolder;
     color: rgba(0, 0, 0, 0.623);
 }
@@ -95,4 +94,10 @@ p #netflixIcon {
 
 p #amazonIcon {
     margin-left: 40px;
+}
+
+#bkmHeading {
+    font-size: large;
+    font-weight: bolder;
+    color: rgba(0, 0, 0, 0.623);
 }
