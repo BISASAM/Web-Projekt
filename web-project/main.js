@@ -22,7 +22,7 @@ textInput.addEventListener("keyup", function(event) {
 });
 
 // ---Catch a click on 'Merkliste' Button
-bookmarksBtn.addEventListener('click', showSavedSeries);
+bookmarksBtn.addEventListener('click', showBookmarks);
 
 // ---Catch a change in filter settings
 selectedFilter.addEventListener("change", onChangeFilter);
@@ -44,20 +44,28 @@ async function apiSearch() {
     console.log(apiResult);
 
     insertIntoHTML();
-    
+}
+
+async function apiSearchWithID(sourceId) {
+    // This function is used for the bookmarklist
+    const response = await fetch(`http://api.tvmaze.com/shows/${sourceId}`);
+    // 200 means "ok".
+    if (response.status !== 200) {
+        console.log('Problem with api: ' + response.status);
+    }
+
+    const result = await response.json();  // global var
+
+    return result;
 }
 
 // Insert api request results into HTML
 function insertIntoHTML() {
-
     // clear results div
     resultsContainer.innerHTML = '';
 
     //filter entries
     const filteredResult = apiResult.filter(checkSeriesStatus);
-
-    console.log(filteredResult);
-
 
     if (!filteredResult.length > 0) {
         resultsContainer.innerHTML = "<p>Kein Ergebnis gefunden</p>"
@@ -65,29 +73,28 @@ function insertIntoHTML() {
     }
 
     // insert div elements per series
+    let bookmarks = getBookmarks();
     for (const series of filteredResult) {
         if (series.show.image) {
-            createDivElementForSeries(series.show);
+            createDivElementForSeries(series.show, bookmarks);
         } 
     }
     
 }
 
 // create div element for each movie and append to parent div
-function createDivElementForSeries(source) {
-    let btnText = seriesIsAlreadySaved(source.id);
+function createDivElementForSeries(source, bookmarks) {
+    let bkmBtnText = bookmarks.has(source.id) ? "Vergessen" : "Merken";
 
     let seriesDiv = document.createElement('div');
-    seriesDiv.id = 'series'
+    seriesDiv.className = 'series';
     seriesDiv.innerHTML = 
     `
     <img src="${source.image.medium}"></img>
-    <p id="name">
-        ${source.name}
-    </p>
+    <p class"seriesName">${source.name}</p>
     <p>
         <button class="info">Info</button>
-        <button class="favs" name="${source.id}+/${source.name}+/${source.externals.imdb}+/${source.premiered}">${btnText}</button>
+        <button class="favs">${bkmBtnText}</button>
         <a href="https://www.netflix.com/search?q=${source.name}" target="_blank">
             <img id="netflixIcon" src="/icons/1200px-Netflix_icon.svg.png"></img>
         </a>
@@ -95,17 +102,17 @@ function createDivElementForSeries(source) {
             <img id="amazonIcon" src="/icons/amazon-prime.png"></img>
         </a>
     </p>
-    <div class="hidden" id="infoText">
+    <div class="hidden infobox" id="${source.id}">
         ${source.summary}
     </div>
-    `
+    `;
 
     // set event listener to info- and bookmark button
-    const infoButton = seriesDiv.getElementsByClassName("info")[0]
-    infoButton.addEventListener('click', function() {showInfo(infoButton)});
+    const infoButton = seriesDiv.getElementsByClassName("info")[0];
+    infoButton.addEventListener('click', function() {showInfo(source.id)});
     
     const bookmarkButton = seriesDiv.getElementsByClassName("favs")[0]
-    bookmarkButton.addEventListener('click', function() {saveOrDelete(bookmarkButton)});
+    bookmarkButton.addEventListener('click', function(event) {onBookmarkBtn(event, source.id)});
     
     resultsContainer.appendChild(seriesDiv);
 
@@ -115,43 +122,58 @@ function createDivElementForSeries(source) {
 
 // Button methods
 // ---Info Button
-function showInfo(btnElement) {
-    btnElement.parentNode.nextSibling.nextSibling.classList.toggle("hidden");
+function showInfo(seriesId) {
+    document.getElementById(seriesId).classList.toggle("hidden");
 }
 
 // ---Bookmark Button
-function saveOrDelete(btn) {
-    // series already on bookmark list?
-    btnInfo = btn.name.split("+/");
-    if (btn.innerHTML === "Merken") {
-        saveSeries(btn.name);
-        btn.innerHTML = "Vergessen";
-    } else {
-        btn.innerHTML = "Merken";
-        deleteSeries(btnInfo[0]);
+function onBookmarkBtn(event, seriesId) {
+
+    if (getBookmarks().has(seriesId)) {
+        deleteSeries(seriesId);
+        event.target.innerHTML = "Merken";
+    } 
+    else {
+        saveSeries(seriesId);
+        event.target.innerHTML = "Vergessen";
     }
 }
 
-// ---Change Filter
+// ---Change Filter in selection dropdown
 function onChangeFilter() {
     if (apiResult == undefined) { // there hasn't been made an api request yet
         return;
     }
 
-    insertIntoHTML();
+    insertIntoHTML(apiResult);
 }
 
 
 
-// Bookmark Button methods
-// ---Saves series to local storage
-function saveSeries(informationString) {
-    let series = JSON.parse(localStorage.getItem('savedSeries'));
-    if (series === null) {
-        series = [];
+// Bookmark methods
+// ---Get bookmarked series
+function getBookmarks() {
+    let bookmarks = JSON.parse(localStorage.getItem('savedSeries'));
+    
+    if (bookmarks === null) {
+        bookmarks = new Set();
+    } else {
+        bookmarks = new Set(bookmarks); // convert Array to Set to have unique entries
     }
-    series.push(informationString);
-    localStorage.setItem('savedSeries', JSON.stringify(series));
+
+    return bookmarks;
+}
+
+// ---Saves series to local storage
+function saveSeries(id) {
+    
+    let bookmarks = getBookmarks();
+    bookmarks.add(id);
+
+    // convert to array and write to local storage
+    localStorage.setItem('savedSeries', JSON.stringify([...bookmarks]));
+
+    console.log (bookmarks);
 
     // TODO: Hier entweder mit einem Class toggle zwischen Merken und vergessen
     // switchen oder irgendwie nur das innerHTML verändern... 
@@ -161,60 +183,41 @@ function saveSeries(informationString) {
 
 // ---Delete series from local storage
 function deleteSeries(id) {
-    let series = JSON.parse(localStorage.getItem('savedSeries'));
-    newArray = [];
-    for (let i=0; i<series.length; i++) {
-        x = series[i].split('+/');
-        if (x[0] === id) {
-            series.splice(i, 1);
-            break;
-        }
-    }
-    seriesID = series[0].split('+/');
-    localStorage.setItem('savedSeries', JSON.stringify(series));
+
+    let bookmarks = getBookmarks();
+    bookmarks.delete(id);
+
+    // convert to array and write to local storage
+    localStorage.setItem('savedSeries', JSON.stringify([...bookmarks]));
+
+    console.log (bookmarks);
 }
 
-
-
-// show Bookmark list methods
-// ---Create new div element for the bookmarks list 
-function createDivElementForBookmarks(seriesName, imdbID, premiere) {
-    let bookmarkTr = 
-    `
-    <tr>
-        <td>${seriesName}</td>
-        <td><a href="https://www.imdb.com/title/${imdbID}/" target="_blank">${imdbID}</a></td>
-        <td>${premiere}</td>
-        <td>
-            <a href="https://www.netflix.com/search?q=${seriesName}" target="_blank">
-                <img id="netflixIcon" src="/icons/1200px-Netflix_icon.svg.png"></img>
-            </a>
-        </td>
-        <td>
-            <a href="https://www.amazon.de/s?k=${seriesName}&i=instant-video&__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&ref=nb_sb_noss_2" target="_blank">
-                <img id="amazonIcon" src="/icons/amazon-prime.png"></img>
-            </a>
-        </td>
-    </tr>`;
-    return bookmarkTr;
-}
 
 // ---Show saved Series
-function showSavedSeries() {
-    let htmlString = 
-    `<table id="bookmarks">
-        <thead>
-            <th>NAME</th><th>IMDB</th><th>PREMIERE<th>NETFLIX</th><th>AMAZON</th>
-        </thead>
-        <tbody>
-        `;
-    let bookmarksArray = JSON.parse(localStorage.getItem('savedSeries'));
-    for (series of bookmarksArray) {
-        series = series.split("+/");
-        console.log("0: " + series[0] + ", 1: " + series[1] + ", 2: " + series[2] + ", 3: " + series[3]);
-        htmlString += createDivElementForBookmarks(series[1], series[2], series[3]);
+async function showBookmarks() {
+
+    let bookmarks = getBookmarks();
+    
+    let apiResults = [];
+    for (const seriesId of bookmarks) {
+        const result = await apiSearchWithID(seriesId);
+        apiResults.push(result);
     }
-    resultsContainer.innerHTML = htmlString + '</tbody></table>';
+
+    console.log(apiResults);
+
+    insertBookmarksIntoHTML(apiResults);
+}
+
+function insertBookmarksIntoHTML(seriesList) {
+    // clear results div
+    resultsContainer.innerHTML = '';
+
+    let bookmarks = getBookmarks();
+    for (entry of seriesList) {
+        createDivElementForSeries(entry, bookmarks);
+    }
 }
 
 
@@ -228,27 +231,3 @@ function checkSeriesStatus(seriesJson) {
         return seriesJson.show.status === selectedFilter.value;
     }
 }
-
-
-
-
-
-
-
-// ----- Show the correct buttons when reloading the page -----
-function seriesIsAlreadySaved(id) {
-    let bookmarksArray = JSON.parse(localStorage.getItem('savedSeries'));
-    if (!bookmarksArray) {
-        return "Merken";
-    }
-    for (series of bookmarksArray) {
-        series = series.split("+/");
-        if (parseInt(series[0]) === id) {
-            return "Vergessen";
-        }
-    }
-    return "Merken";
-}
-
-// IDEE: Man könnte den Merkliste Knopf auch mit einer art toggle Funktion
-// versehen. Erst steht da Merkliste dann Suche.

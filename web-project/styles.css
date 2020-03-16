@@ -34,7 +34,7 @@ tbody tr:hover {
     flex-wrap: wrap;
 }
 
-#series {
+.series {
     margin: 5px;
     max-width: 250px;
     background-color: #E0E0E0;
@@ -45,7 +45,7 @@ tbody tr:hover {
     display: none;
 }
 
-#infoText {
+.infobox {
     margin-left: 7px;
     margin-right: 7px;
 }
@@ -73,7 +73,7 @@ tbody tr:hover {
     border-radius: 15%;
 }
 
-#name {
+.seriesName {
     font-weight: bolder;
     color: rgba(0, 0, 0, 0.623);
 }
