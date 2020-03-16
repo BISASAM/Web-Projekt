@@ -47,10 +47,7 @@ async function apiSearch() {
     
 }
 
-
-
 // Insert api request results into HTML
-// ---process api request results
 function insertIntoHTML() {
     // clear results div
     resultsContainer.innerHTML = '';
@@ -66,17 +63,17 @@ function insertIntoHTML() {
         return;
     }
 
-    // insert div elements per movie
+    // insert div elements per series
     for (const series of filteredResult) {
         if (series.show.image) {
-            createDivElementForMovie(series.show);
+            createDivElementForSeries(series.show);
         } 
     }
     
 }
 
-// ---create div Layout for each movie and append to parent div
-function createDivElementForMovie(source) {
+// create div element for each movie and append to parent div
+function createDivElementForSeries(source) {
     let btnText = seriesIsAlreadySaved(source.id);
 
     let seriesDiv = document.createElement('div');
@@ -213,8 +210,6 @@ function showSavedSeries() {
 
 
 // Helper methods
-
-// ---Does the jsonElement match the selected filter method?
 function checkSeriesStatus(seriesJson) {
     if (selectedFilter.value === 'Alle') {
         return true;
