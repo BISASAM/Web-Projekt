@@ -88,26 +88,31 @@ function createDivElementForSeries(series, bookmarks) {
     `
     <img src="${series.image.medium}"></img>
     <p class="seriesName">${series.name}</p>
-    <p>
-        <button class="info">Info</button>
-        <button class="favs">${bkmBtnText}</button>
+    <div>
+        <button class="infoBtn">Info</button>
+        <button class="bkmBtn">${bkmBtnText}</button>
+    </div>
+    <div class="center">
         <a href="https://www.netflix.com/search?q=${series.name}" target="_blank">
-            <img id="netflixIcon" src="/icons/1200px-Netflix_icon.svg.png"></img>
+            <img class="netflixIcon" src="/icons/netflix_icon.png"></img>
+        </a>
+        <a href="https://www.imdb.com/title/${series.externals.imdb}" target="_blank">
+            <img class="amazonIcon" src="/icons/imdb_icon.png"></img>
         </a>
         <a href="https://www.amazon.de/s?k=${series.name}&i=instant-video&__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&ref=nb_sb_noss_2" target="_blank">
-            <img id="amazonIcon" src="/icons/amazon-prime.png"></img>
-        </a>
-    </p>
-    <div class="hidden infobox" id="${series.id}">
+            <img class="amazonIcon" src="/icons/amazonprime_icon.png"></img>
+        </a>  
+    </div>
+    <div class="infobox hidden" id="${series.id}">
         ${series.summary}
     </div>
     `;
 
     // set event listener to created info- and bookmark button
-    const infoButton = seriesDiv.getElementsByClassName("info")[0];
+    const infoButton = seriesDiv.getElementsByClassName("infoBtn")[0];
     infoButton.addEventListener('click', function() {OnInfoBtn(series.id)});
     
-    const bookmarkButton = seriesDiv.getElementsByClassName("favs")[0]
+    const bookmarkButton = seriesDiv.getElementsByClassName("bkmBtn")[0]
     bookmarkButton.addEventListener('click', function(event) {onBookmarkBtn(event, series.id)});
     
     resultsContainer.appendChild(seriesDiv);
@@ -207,11 +212,6 @@ function saveSeries(id) {
     localStorage.setItem('savedSeries', JSON.stringify([...bookmarks]));
 
     console.log (bookmarks);
-
-    // TODO: Hier entweder mit einem Class toggle zwischen Merken und vergessen
-    // switchen oder irgendwie nur das innerHTML verändern... 
-    // Auf jeden Fall etwas womit man später auch Elemente von der Merkliste
-    // löschen kann.
 }
 
 // ---Delete series from local storage

@@ -13,22 +13,6 @@ h1 {
     margin-bottom: 10px;
 }
 
-table {
-    border-collapse: collapse;
-    margin-top: 20px;
-    background: white;
-}
-
-th, td {
-    padding: 10px;
-    text-align: left;
-    border: 1px solid black;
-}
-
-tbody tr:hover {
-    background: whitesmoke;
-}
-
 #results {
     display: flex;
     flex-wrap: wrap;
@@ -50,16 +34,16 @@ tbody tr:hover {
     margin-right: 7px;
 }
 
-.info, .favs {
+.infoBtn, .bkmBtn {
     width: 100px;
     padding: 0.25rem;
 }
 
-.info {
+.infoBtn {
     margin-left: 20px;
 }
 
-.favs {
+.bkmBtn {
     margin-right: 20px;
 }
 
@@ -77,27 +61,25 @@ tbody tr:hover {
     color: rgba(0, 0, 0, 0.623);
 }
 
-#netflixIcon, #amazonIcon {
+.netflixIcon, .amazonIcon {
     width: 40px;
     height: 40px;
-}
-
-table #netflixIcon, table #amazonIcon {
-    width: 30px;
-    height: 30px;
-    padding: 10px;
-}
-
-p #netflixIcon {
-    margin-left: 50px;
-}
-
-p #amazonIcon {
     margin-left: 40px;
+    margin-left: 40px;
+    margin-bottom: 10px;
 }
 
 #bkmHeading {
     font-size: large;
     font-weight: bolder;
     color: rgba(0, 0, 0, 0.623);
+}
+
+.center {
+    margin: auto;
+    text-align: center;
+}
+
+a {
+    text-decoration : none;
 }
