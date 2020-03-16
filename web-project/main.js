@@ -36,8 +36,6 @@ async function apiSearch() {
 
     const result = await response.json();
 
-    console.log(result);
-
     return result;
 }
 
@@ -154,7 +152,6 @@ async function showBookmarks() {
         apiResult.push({"show": result});  // keep original array structure
     }
 
-    console.log(apiResult);
     insertIntoHTML();
 }
 
