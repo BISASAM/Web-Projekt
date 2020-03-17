@@ -47,6 +47,21 @@ h1 {
     margin-right: 20px;
 }
 
+.infochecked {
+    border-style:inset;
+}
+
+.bookmarked {
+    border-style: solid;
+    color: #fff;
+    background-color: #1fabec;
+    border-color: #1fabec;
+}
+
+button:focus {  /* remove ugly blue border when buttons are focused */
+    outline:0;
+}
+
 .series img {
     margin-left: 20px;
     margin-right: 20px;

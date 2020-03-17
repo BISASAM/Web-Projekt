@@ -81,6 +81,7 @@ function createDivElementForSeries(series, bookmarks) {
     // creates div element for one series and appends it to parent div
     // also, checks if series is bookmarked already
     let bkmBtnText = bookmarks.has(series.id) ? "Vergessen" : "Merken";
+    let bkmBtnClass = bookmarks.has(series.id) ? "bookmarked" : "";
 
     let seriesDiv = document.createElement('div');
     seriesDiv.className = 'series';
@@ -90,7 +91,7 @@ function createDivElementForSeries(series, bookmarks) {
     <p class="seriesName">${series.name}</p>
     <div>
         <button class="infoBtn">Info</button>
-        <button class="bkmBtn">${bkmBtnText}</button>
+        <button class="bkmBtn ${bkmBtnClass}">${bkmBtnText}</button>
     </div>
     <div class="center">
         <a href="https://www.netflix.com/search?q=${series.name}" target="_blank">
@@ -110,7 +111,7 @@ function createDivElementForSeries(series, bookmarks) {
 
     // set event listener to created info- and bookmark button
     const infoButton = seriesDiv.getElementsByClassName("infoBtn")[0];
-    infoButton.addEventListener('click', function() {OnInfoBtn(series.id)});
+    infoButton.addEventListener('click', function(event) {OnInfoBtn(event, series.id)});
     
     const bookmarkButton = seriesDiv.getElementsByClassName("bkmBtn")[0]
     bookmarkButton.addEventListener('click', function(event) {onBookmarkBtn(event, series.id)});
@@ -136,7 +137,7 @@ async function onLosBtn() {
     insertIntoHTML();
 }
 
-// ---Merkliste Button
+// ---Merkliste zeigen Button
 async function showBookmarks() {
 
     //reset filter to show all bookmarks
@@ -161,8 +162,9 @@ async function showBookmarks() {
 }
 
 // ---Info Button
-function OnInfoBtn(seriesId) {
+function OnInfoBtn(event, seriesId) {
     document.getElementById(seriesId).classList.toggle("hidden");
+    event.target.classList.toggle("infochecked");
 }
 
 // ---Bookmark Button
@@ -171,10 +173,12 @@ function onBookmarkBtn(event, seriesId) {
     if (getBookmarks().has(seriesId)) {
         deleteSeries(seriesId);
         event.target.innerHTML = "Merken";
+        event.target.classList.remove("bookmarked");
     } 
     else {
         saveSeries(seriesId);
         event.target.innerHTML = "Vergessen";
+        event.target.classList.add("bookmarked");
     }
 }
 
