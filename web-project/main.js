@@ -164,7 +164,7 @@ async function showBookmarks() {
 // ---Info Button
 function OnInfoBtn(event, seriesId) {
     document.getElementById(seriesId).classList.toggle("hidden");
-    event.target.classList.toggle("infochecked");
+    event.target.classList.toggle("pressed");
 }
 
 // ---Bookmark Button
