@@ -1,8 +1,9 @@
 const resultsContainer = document.getElementById('results');
 const textInput = document.getElementById('searchText');
 const losBtn = document.getElementById('searchButton');
-const selectedFilter = document.getElementById('filter');
 const bookmarksBtn = document.getElementById('showBookmarks');
+const statusFilter = document.getElementById('statusFilter');
+const genreFilter = document.getElementById('genreFilter');
 
 // globaly available api results (allows filtering without performing a re-request)
 let apiResult;
@@ -22,7 +23,8 @@ textInput.addEventListener("keyup", function(event) {
 // ---Catch a click on 'Merkliste' Button
 bookmarksBtn.addEventListener('click', showBookmarks);
 // ---Catch a change in filter settings
-selectedFilter.addEventListener("change", onChangeFilter);
+statusFilter.addEventListener("change", onChangeFilter);
+genreFilter.addEventListener("change", onChangeFilter);
 
 
 async function apiSearch() {
@@ -60,7 +62,7 @@ function insertIntoHTML() {
     resultsContainer.innerHTML = '';
 
     //filter entries
-    const filteredResult = apiResult.filter(checkSeriesStatus);
+    const filteredResult = apiResult.filter(applyFilters);
 
     if (!filteredResult.length > 0) {
         resultsContainer.innerHTML = "<p>Kein Ergebnis gefunden</p>"
@@ -70,11 +72,13 @@ function insertIntoHTML() {
     // insert div elements per series
     let bookmarks = getBookmarks();
     for (const series of filteredResult) {
-        if (series.show.image) {
-            createDivElementForSeries(series.show, bookmarks);
+        if (!series.show.image) {
+            series.show.image = {"medium": "icons/no_picture.png"};
         } 
+        createDivElementForSeries(series.show, bookmarks);
     }
     
+    console.log(apiResult);
 }
 
 function createDivElementForSeries(series, bookmarks) {
@@ -134,6 +138,8 @@ async function onLosBtn() {
     }
 
     apiResult = await apiSearch();  // global var
+    console.log(apiResult);
+    setFilterOptionsInUi(apiResult);
     insertIntoHTML();
 }
 
@@ -141,7 +147,7 @@ async function onLosBtn() {
 async function showBookmarks() {
 
     //reset filter to show all bookmarks
-    selectedFilter.selectedIndex = 0;
+    statusFilter.selectedIndex = 0;
 
     // create little heading for bookmark page
     if (document.getElementById("bkmHeading") == null) {
@@ -232,11 +238,46 @@ function deleteSeries(id) {
 
 
 // Helper methods
-function checkSeriesStatus(seriesJson) {
-    if (selectedFilter.value === 'Alle') {
-        return true;
+function applyFilters(seriesJson) {
+    // filter for status
+    let sFilter = true;
+    if (statusFilter.value !== 'Alle') {
+        sFilter = seriesJson.show.status === statusFilter.value;
     }
-    else {
-        return seriesJson.show.status === selectedFilter.value;
+
+    // filter for genre
+    let gFilter = true;
+    if (genreFilter.value !== 'Alle') {
+        gFilter = seriesJson.show.genres.includes(genreFilter.value);
     }
+
+    return sFilter && gFilter
+}
+
+function setFilterOptionsInUi(seriesArr) {
+    // gather all genres & statuses in sets
+    let statuses = new Set();
+    let genres = new Set();
+    for (series of seriesArr) {
+        statuses.add(series.show.status);
+        series.show.genres.forEach(genre => genres.add(genre));
+    }
+    
+    // add each genre to UI's filter options
+    genreFilter.innerHTML = "<option>Alle</option>"  //reset all entries first
+    for (genre of genres) {
+        let option = document.createElement("option");
+        option.text = genre;
+        genreFilter.add(option);
+    }
+
+    // add each status to UI's filter options
+    statusFilter.innerHTML = "<option>Alle</option>"  //reset all entries first
+    for (status of statuses) {
+        let option = document.createElement("option");
+        option.text = status;
+        statusFilter.add(option);
+    }
+
+    
 }
