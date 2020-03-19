@@ -16,9 +16,26 @@ button:focus {  /* remove ugly blue border when buttons are focused */
     outline:0;
 }
 
-#filterBox {
-    margin-top: 10px;
-    margin-bottom: 10px;
+#menu {
+    margin-left: 10px;
+    margin-bottom: 20px;
+    line-height: 2.5;
+}
+
+#menu span {
+    display: inline-block;
+    width: 6rem;
+}
+
+#menu button {
+    padding: 0.2rem;
+    margin-left: 10px;
+    min-width: 120px;
+}
+
+#menu select {
+    margin-right: 10px;
+    min-width: 130px;
 }
 
 #bkmHeading {

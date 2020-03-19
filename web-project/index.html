@@ -8,22 +8,24 @@
   </head>
   <body>
     <h1>Finde Deine Serie!</h1>
-    <div id="search">
-      Suchanfrage:
-      <input id="searchText" type="search" />
-      <button id="searchButton">Los!</button>
-      <button id="showBookmarks">Zur Merkliste</button>
-    </div>
-    <div id="filterBox">
-      Filter: 
-      Status:
-      <select id="statusFilter">
-        <option>Alle</option>
-      </select>
-      Genre:
-      <select id="genreFilter">
-        <option>Alle</option>
-      </select>
+    <div id="menu">
+      <div id="searchBox">
+        <span>Suchanfrage:</span>
+        <input id="searchText" type="search" />
+        <button id="searchButton">Los!</button>
+        <button id="showBookmarks">Zur Merkliste</button>
+      </div>
+      <div id="filterBox">
+        <span>Filter:</span>
+        Status:
+        <select id="statusFilter">
+          <option>Alle</option>
+        </select>
+        Genre:
+        <select id="genreFilter">
+          <option>Alle</option>
+        </select>
+      </div>
     </div>
     <div id="results" class="dropdown">
       <!-- hier werden die Suchergebnisse angezeigt -->
