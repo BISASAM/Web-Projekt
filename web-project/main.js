@@ -12,6 +12,7 @@ let apiResult;
 
 initialize();
 
+
 function initialize() {
     // disable filterBox on startup
     filterBox.classList.add('disabled');
@@ -253,17 +254,17 @@ function deleteSeries(id) {
 
 
 // Helper methods
-function applyFilters(seriesJson) {
+function applyFilters(series) {
     // filter for status
     let sFilter = true;
     if (statusFilter.value !== 'Alle') {
-        sFilter = seriesJson.show.status === statusFilter.value;
+        sFilter = series.show.status === statusFilter.value;
     }
 
     // filter for genre
     let gFilter = true;
     if (genreFilter.value !== 'Alle') {
-        gFilter = seriesJson.show.genres.includes(genreFilter.value);
+        gFilter = series.show.genres.includes(genreFilter.value);
     }
 
     return sFilter && gFilter
