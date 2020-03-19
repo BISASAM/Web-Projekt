@@ -101,7 +101,7 @@ function createDivElementForSeries(series, bookmarks) {
     let bkmBtnClass = bookmarks.has(series.id) ? "bookmarked" : "";
 
     let seriesDiv = document.createElement('div');
-    seriesDiv.className = 'series';
+    seriesDiv.className = 'seriesBox';
     seriesDiv.innerHTML = 
     `
     <img class="poster" src="${series.image.medium}"></img>
@@ -121,7 +121,7 @@ function createDivElementForSeries(series, bookmarks) {
             <img class="extIcon" src="/icons/amazonprime_icon.png"></img>
         </a>  
     </div>
-    <div class="infobox hidden" id="${series.id}">
+    <div class="infoText hidden" id="${series.id}">
         ${series.summary}
     </div>
     `;

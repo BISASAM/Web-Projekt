@@ -32,8 +32,8 @@ button:focus {  /* remove ugly blue border when buttons are focused */
     flex-wrap: wrap;
 }
 
-.series {
-    max-width: 220px;
+.seriesBox {
+    max-width: 200px;
     margin: 5px;
     padding: 20px;
     background-color: #E0E0E0;
@@ -52,11 +52,11 @@ button:focus {  /* remove ugly blue border when buttons are focused */
     color: rgba(0, 0, 0, 0.623);
 }
 
-.series div {
+.seriesBox div {
     margin-top: 10px;
 }
 
-.series button {
+.seriesBox button {
     padding: 0.25rem;
     margin-left: 7px;
     margin-right: 7px;
@@ -70,8 +70,8 @@ button:focus {  /* remove ugly blue border when buttons are focused */
 }
 
 .extIcon {
-    width: 50px;
-    height: 50px;
+    width: 40px;
+    height: 40px;
     margin-top: 10px;
     margin-left: 10px;
     margin-right: 10px;
