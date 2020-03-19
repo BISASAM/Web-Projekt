@@ -1,36 +1,70 @@
 const resultsContainer = document.getElementById('results');
+const filterBox = document.getElementById('filterBox');
 const textInput = document.getElementById('searchText');
 const losBtn = document.getElementById('searchButton');
 const bookmarksBtn = document.getElementById('showBookmarks');
 const statusFilter = document.getElementById('statusFilter');
 const genreFilter = document.getElementById('genreFilter');
 
+
 // globaly available api results (allows filtering without performing a re-request)
 let apiResult;
 
+initialize();
 
-// Set up Event Listener
-// ---Catch a click on 'Los' Button
-losBtn.addEventListener('click', onLosBtn);
-// ---Catch key event in text input field
-textInput.addEventListener("keyup", function(event) {
-    // Enter is key number 13.
-    if (event.keyCode === 13) {
-    event.preventDefault();
-    onLosBtn();
+function initialize() {
+    // disable filterBox on startup
+    filterBox.classList.add('disabled');
+
+    // ---Catch a click on 'Los' Button
+    losBtn.addEventListener('click', onLosBtn);
+
+    // ---Catch key event in text input field
+    textInput.addEventListener("keyup", function(event) {
+        // Enter is key number 13.
+        if (event.keyCode === 13) {
+        event.preventDefault();
+        onLosBtn();
+        }
+    });
+
+    // ---Catch a click on 'Merkliste' Button
+    bookmarksBtn.addEventListener('click', showBookmarks);
+
+    // ---Catch a change in filter settings
+    statusFilter.addEventListener("change", onChangeFilter);
+    genreFilter.addEventListener("change", onChangeFilter);
+}
+
+function insertIntoHTML() {
+    // this funtion takes whatever is in the global apiResult variable, filters it, and displays it
+
+    // activate filterBox
+    filterBox.classList.remove('disabled');
+
+    // clear results div
+    resultsContainer.innerHTML = '';
+
+    //filter entries
+    const filteredResult = apiResult.filter(applyFilters);
+
+    if (!filteredResult.length > 0) {
+        resultsContainer.innerHTML = "<p>Kein Ergebnis gefunden</p>"
+        return;
     }
-});
-// ---Catch a click on 'Merkliste' Button
-bookmarksBtn.addEventListener('click', showBookmarks);
-// ---Catch a change in filter settings
-statusFilter.addEventListener("change", onChangeFilter);
-genreFilter.addEventListener("change", onChangeFilter);
 
+    // insert div elements per series
+    let bookmarks = getBookmarks();
+    for (const series of filteredResult) {
+        createDivElementForSeries(series.show, bookmarks);
+    }
+    
+    console.log(apiResult);
+}
 
-async function apiSearch() {
-    const searchQuery = textInput.value;
+async function apiSearch(string) {
     // Save JSON-Result. 
-    const response = await fetch(`http://api.tvmaze.com/search/shows?q=${searchQuery}`);
+    const response = await fetch(`http://api.tvmaze.com/search/shows?q=${string}`);
     // 200 means "ok".
     if (response.status !== 200) {
         console.log('Problem with api: ' + response.status);
@@ -54,36 +88,14 @@ async function apiSearchWithID(sourceId) {
     return result;
 }
 
-function insertIntoHTML() {
-    // this funtion takes whatever is in the global apiResult variable, filters it, and displays it
-
-
-    // clear results div
-    resultsContainer.innerHTML = '';
-
-    //filter entries
-    const filteredResult = apiResult.filter(applyFilters);
-
-    if (!filteredResult.length > 0) {
-        resultsContainer.innerHTML = "<p>Kein Ergebnis gefunden</p>"
-        return;
-    }
-
-    // insert div elements per series
-    let bookmarks = getBookmarks();
-    for (const series of filteredResult) {
-        if (!series.show.image) {
-            series.show.image = {"medium": "icons/no_picture.png"};
-        } 
-        createDivElementForSeries(series.show, bookmarks);
-    }
-    
-    console.log(apiResult);
-}
-
 function createDivElementForSeries(series, bookmarks) {
     // creates div element for one series and appends it to parent div
     // also, checks if series is bookmarked already
+
+    if (!series.image) {
+        series.image = {"medium": "icons/no_picture.png"};
+    } 
+
     let bkmBtnText = bookmarks.has(series.id) ? "Vergessen" : "Merken";
     let bkmBtnClass = bookmarks.has(series.id) ? "bookmarked" : "";
 
@@ -115,7 +127,7 @@ function createDivElementForSeries(series, bookmarks) {
 
     // set event listener to created info- and bookmark button
     const infoButton = seriesDiv.getElementsByClassName("infoBtn")[0];
-    infoButton.addEventListener('click', function(event) {OnInfoBtn(event, series.id)});
+    infoButton.addEventListener('click', function(event) {onInfoBtn(event, series.id)});
     
     const bookmarkButton = seriesDiv.getElementsByClassName("bkmBtn")[0]
     bookmarkButton.addEventListener('click', function(event) {onBookmarkBtn(event, series.id)});
@@ -123,7 +135,6 @@ function createDivElementForSeries(series, bookmarks) {
     resultsContainer.appendChild(seriesDiv);
 
 }
-
 
 
 // Button methods
@@ -137,8 +148,9 @@ async function onLosBtn() {
         elem.parentNode.removeChild(elem);
     }
 
-    apiResult = await apiSearch();  // global var
-    console.log(apiResult);
+    const searchQuery = textInput.value;
+    apiResult = await apiSearch(searchQuery);  // global var
+    
     setFilterOptionsInUi(apiResult);
     insertIntoHTML();
 }
@@ -157,18 +169,20 @@ async function showBookmarks() {
         resultsContainer.parentNode.insertBefore(bookmarkHeading, resultsContainer);
     }
 
-    let bookmarks = getBookmarks();  
+    // do an api-request for each saved series-ID 
     apiResult = [];  // global var
+    let bookmarks = getBookmarks();  
     for (const seriesId of bookmarks) {
         const result = await apiSearchWithID(seriesId);
         apiResult.push({"show": result});  // keep original array structure
     }
 
+    setFilterOptionsInUi(apiResult);
     insertIntoHTML();
 }
 
 // ---Info Button
-function OnInfoBtn(event, seriesId) {
+function onInfoBtn(event, seriesId) {
     document.getElementById(seriesId).classList.toggle("hidden");
     event.target.classList.toggle("pressed");
 }
@@ -235,6 +249,7 @@ function deleteSeries(id) {
 
     console.log (bookmarks);
 }
+
 
 
 // Helper methods
