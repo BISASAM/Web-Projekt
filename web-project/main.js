@@ -191,12 +191,17 @@ function onInfoBtn(event, seriesId) {
 // ---Bookmark Button
 function onBookmarkBtn(event, seriesId) {
 
-    if (getBookmarks().has(seriesId)) {
+    if (getBookmarks().has(seriesId)) {  // case: series is bookmarked
         deleteSeries(seriesId);
         event.target.innerHTML = "Merken";
         event.target.classList.remove("bookmarked");
+        
+        // if on "merliste", reload page
+        if (document.getElementById("bkmHeading") != null) {
+            showBookmarks();
+        }
     } 
-    else {
+    else {  // case: series is not bookmarked
         saveSeries(seriesId);
         event.target.innerHTML = "Vergessen";
         event.target.classList.add("bookmarked");
