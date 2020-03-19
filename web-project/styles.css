@@ -8,9 +8,23 @@ h1 {
     color: #0099FF;
 }
 
+a {  /* Links kriegen keinen Unterstrich */
+    text-decoration : none;
+}
+
+button:focus {  /* remove ugly blue border when buttons are focused */
+    outline:0;
+}
+
 #filterBox {
     margin-top: 10px;
     margin-bottom: 10px;
+}
+
+#bkmHeading {
+    font-size: large;
+    font-weight: bolder;
+    color: rgba(0, 0, 0, 0.623);
 }
 
 #results {
@@ -19,11 +33,50 @@ h1 {
 }
 
 .series {
+    max-width: 220px;
     margin: 5px;
-    max-width: 250px;
+    padding: 20px;
     background-color: #E0E0E0;
     border-radius: 5%;
 }
+
+.poster {
+    border-radius: 7%;
+    width: 100%;
+}
+
+.seriesName {
+    margin-left: 20px;
+    margin-right: 20px;
+    font-weight: bolder;
+    color: rgba(0, 0, 0, 0.623);
+}
+
+.series div {
+    margin-top: 10px;
+}
+
+.series button {
+    padding: 0.25rem;
+    margin-left: 7px;
+    margin-right: 7px;
+    width: 40%;
+}
+
+.infoText {
+    margin-left: 7px;
+    margin-right: 7px;
+    font-size: 14px;
+}
+
+.extIcon {
+    width: 50px;
+    height: 50px;
+    margin-top: 10px;
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 
 .hidden {
     display: none;
@@ -32,25 +85,6 @@ h1 {
 .disabled {
     pointer-events: none;
     opacity: 0.4;
-}
-
-.infobox {
-    margin-left: 7px;
-    margin-right: 7px;
-    font-size: 14px;
-}
-
-.infoBtn, .bkmBtn {
-    width: 100px;
-    padding: 0.25rem;
-}
-
-.infoBtn {
-    margin-left: 20px;
-}
-
-.bkmBtn {
-    margin-right: 20px;
 }
 
 .pressed {
@@ -64,43 +98,8 @@ h1 {
     border-color: #1fabec;
 }
 
-button:focus {  /* remove ugly blue border when buttons are focused */
-    outline:0;
-}
-
-.series img {
-    margin-left: 20px;
-    margin-right: 20px;
-    margin-top: 20px;
-    border-radius: 7%;
-}
-
-.seriesName {
-    margin-left: 20px;
-    margin-right: 20px;
-    font-weight: bolder;
-    color: rgba(0, 0, 0, 0.623);
-}
-
-.netflixIcon, .amazonIcon {
-    width: 40px;
-    height: 40px;
-    margin-left: 40px;
-    margin-left: 40px;
-    margin-bottom: 10px;
-}
-
-#bkmHeading {
-    font-size: large;
-    font-weight: bolder;
-    color: rgba(0, 0, 0, 0.623);
-}
-
 .center {
     margin: auto;
     text-align: center;
 }
 
-a {
-    text-decoration : none;
-}

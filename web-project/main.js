@@ -104,21 +104,21 @@ function createDivElementForSeries(series, bookmarks) {
     seriesDiv.className = 'series';
     seriesDiv.innerHTML = 
     `
-    <img src="${series.image.medium}"></img>
+    <img class="poster" src="${series.image.medium}"></img>
     <p class="seriesName">${series.name}</p>
-    <div>
+    <div class="center">
         <button class="infoBtn">Info</button>
         <button class="bkmBtn ${bkmBtnClass}">${bkmBtnText}</button>
     </div>
     <div class="center">
         <a href="https://www.netflix.com/search?q=${series.name}" target="_blank">
-            <img class="netflixIcon" src="/icons/netflix_icon.png"></img>
+            <img class="extIcon" src="/icons/netflix_icon.png"></img>
         </a>
         <a href="https://www.imdb.com/title/${series.externals.imdb}" target="_blank">
-            <img class="amazonIcon" src="/icons/imdb_icon.png"></img>
+            <img class="extIcon" src="/icons/imdb_icon.png"></img>
         </a>
         <a href="https://www.amazon.de/s?k=${series.name}&i=instant-video&__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&ref=nb_sb_noss_2" target="_blank">
-            <img class="amazonIcon" src="/icons/amazonprime_icon.png"></img>
+            <img class="extIcon" src="/icons/amazonprime_icon.png"></img>
         </a>  
     </div>
     <div class="infobox hidden" id="${series.id}">
