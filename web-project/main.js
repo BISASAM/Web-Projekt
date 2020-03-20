@@ -159,9 +159,6 @@ async function onLosBtn() {
 // ---Merkliste zeigen Button
 async function showBookmarks() {
 
-    //reset filter to show all bookmarks
-    statusFilter.selectedIndex = 0;
-
     // create little heading for bookmark page
     if (document.getElementById("bkmHeading") == null) {
         let bookmarkHeading = document.createElement('p');
@@ -284,7 +281,7 @@ function setFilterOptionsInUi(seriesArr) {
         series.show.genres.forEach(genre => genres.add(genre));
     }
     
-    // add each genre to UI's filter options
+    // add each genre to UI's filter options (this will reset the filter)
     genreFilter.innerHTML = "<option>Alle</option>"  //reset all entries first
     for (genre of genres) {
         let option = document.createElement("option");
@@ -292,7 +289,7 @@ function setFilterOptionsInUi(seriesArr) {
         genreFilter.add(option);
     }
 
-    // add each status to UI's filter options
+    // add each status to UI's filter options (this will reset the filter)
     statusFilter.innerHTML = "<option>Alle</option>"  //reset all entries first
     for (status of statuses) {
         let option = document.createElement("option");
