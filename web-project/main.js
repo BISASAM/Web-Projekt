@@ -112,13 +112,13 @@ function createDivElementForSeries(series, bookmarks) {
     </div>
     <div class="center">
         <a href="https://www.netflix.com/search?q=${series.name}" target="_blank">
-            <img class="extIcon" src="/icons/netflix_icon.png"></img>
+            <img class="extIcon" src="icons/netflix_icon.png"></img>
         </a>
         <a href="https://www.imdb.com/title/${series.externals.imdb}" target="_blank">
-            <img class="extIcon" src="/icons/imdb_icon.png"></img>
+            <img class="extIcon" src="icons/imdb_icon.png"></img>
         </a>
         <a href="https://www.amazon.de/s?k=${series.name}&i=instant-video&__mk_de_DE=%C3%85M%C3%85%C5%BD%C3%95%C3%91&ref=nb_sb_noss_2" target="_blank">
-            <img class="extIcon" src="/icons/amazonprime_icon.png"></img>
+            <img class="extIcon" src="icons/amazonprime_icon.png"></img>
         </a>  
     </div>
     <div class="infoText hidden" id="${series.id}">
