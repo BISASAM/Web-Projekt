@@ -59,8 +59,6 @@ function insertIntoHTML() {
     for (const series of filteredResult) {
         createDivElementForSeries(series.show, bookmarks);
     }
-    
-    console.log(apiResult);
 }
 
 async function apiSearch(string) {
@@ -72,6 +70,8 @@ async function apiSearch(string) {
     }
 
     const result = await response.json();
+
+    console.log(result);
 
     return result;
 }
